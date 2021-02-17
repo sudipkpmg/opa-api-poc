@@ -1,0 +1,430 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Batch Assessments",
+    "description": "This version of the Batch API allows processing of batches of structured data through an Intelligent Advisor policy model",
+    "version": "12.2.7"
+  },
+  "tags": [
+    {
+      "name": "Policy Models",
+      "description": "Batch assessment of Intelligent Advisor policy models"
+    }
+  ],
+  "paths": {
+    "/policy-models": {
+      "get": {
+        "tags": [
+          "Policy Models"
+        ],
+        "summary": "Retrieve a collection of policy models",
+        "description": "This operation will provide details for all policy models that can be used in the API",
+        "operationId": "getPolicyModels",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "description": "Comma separated list of named resources to expand",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request was successfully completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/policyModels"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_opadev_determinations-server": []
+          }
+        ]
+      }
+    },
+    "/policy-models/{policy-model-name}": {
+      "get": {
+        "tags": [
+          "Policy Models"
+        ],
+        "summary": "Retrieve an individual policy model",
+        "description": "This operation will provide details for the specified policy model",
+        "operationId": "getPolicyModel",
+        "parameters": [
+          {
+            "name": "policy-model-name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "description": "Comma separated list of named resources to expand",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request was successfully completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/policyModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist."
+          }
+        },
+        "security": [
+          {
+            "auth_opadev_determinations-server": []
+          }
+        ]
+      }
+    },
+    "/policy-models/{policy-model-name}/data-model": {
+      "get": {
+        "tags": [
+          "Policy Models"
+        ],
+        "summary": "Retrieve the data model",
+        "description": "This operation will provide details of the data model, including the named attributes and relationships, for the specified policy model",
+        "operationId": "getDataModel",
+        "parameters": [
+          {
+            "name": "policy-model-name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "description": "Comma separated list of named resources to expand",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request was successfully completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/dataModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_opadev_determinations-server": []
+          }
+        ]
+      }
+    },
+    "/policy-models/{policy-model-name}/assessor": {
+      "get": {
+        "tags": [
+          "Policy Models"
+        ],
+        "summary": "Retrieve the policy model assessor",
+        "description": "This operation will provide details of the assessor resource for the specified policy model",
+        "operationId": "getAssessor",
+        "parameters": [
+          {
+            "name": "policy-model-name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "description": "Comma separated list of named resources to expand",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request was successfully completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/assessor"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_opadev_determinations-server": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Policy Models"
+        ],
+        "summary": "Submit case data to the policy model assessor",
+        "description": "This operation will assess the outcomes for a collection of cases submitted against the specified policy model",
+        "operationId": "insertAssessor",
+        "parameters": [
+          {
+            "name": "policy-model-name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/assessor"
+              }
+            }
+          },
+          "description": "The assessor to create.",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "The request has been fulfilled and resulted in a new resource being created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/assessor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request could not be processed because it contains missing or invalid information."
+          }
+        },
+        "security": [
+          {
+            "auth_opadev_determinations-server": []
+          }
+        ]
+      }
+    },
+    "/policy-models/{policy-model-name}/assessor/example": {
+      "get": {
+        "tags": [
+          "Policy Models"
+        ],
+        "summary": "Retrieve example request and response assessor payloads",
+        "description": "This operation will provide examples of the request and response payloads for requests made to the assessor resource for the specified policy model",
+        "operationId": "getExample",
+        "parameters": [
+          {
+            "name": "policy-model-name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "description": "Comma separated list of named resources to expand",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request was successfully completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/example"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "auth_opadev_determinations-server": []
+          }
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://de01c01la04075.tndhs.local:7003/opadev/determinations-server/batch/12.2.7"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "auth_opadev_determinations-server": {
+        "type": "apiKey",
+        "description": "Obtain a bearer token from http://de01c01la04075.tndhs.local:7003/opadev/opa-hub/api/12.2.17/auth and use it in the Authorization header as Bearer {token}.",
+        "in": "header",
+        "name": "Authorization"
+      }
+    },
+    "schemas": {
+      "policyModels": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/policyModel"
+            }
+          }
+        }
+      },
+      "policyModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the policy model"
+          },
+          "data-model": {
+            "$ref": "#/components/schemas/dataModel"
+          },
+          "assessor": {
+            "$ref": "#/components/schemas/assessor"
+          }
+        }
+      },
+      "dataModel": {
+        "type": "object",
+        "properties": {
+          "properties": {
+            "$ref": "#/components/schemas/dataModelProperties"
+          }
+        }
+      },
+      "dataModelProperties": {
+        "type": "object"
+      },
+      "assessor": {
+        "type": "object",
+        "properties": {
+          "example": {
+            "$ref": "#/components/schemas/example"
+          }
+        }
+      },
+      "example": {
+        "type": "object",
+        "properties": {
+          "request": {
+            "$ref": "#/components/schemas/exampleRequest"
+          },
+          "response": {
+            "$ref": "#/components/schemas/exampleResponse"
+          }
+        }
+      },
+      "exampleCase": {
+        "type": "object"
+      },
+      "exampleRequest": {
+        "type": "object",
+        "properties": {
+          "outcomes": {
+            "type": "array",
+            "description": "List of outcomes to be assessed for each case submitted.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cases": {
+            "type": "array",
+            "description": "List of cases submitted for assessment",
+            "items": {
+              "$ref": "#/components/schemas/exampleCase"
+            }
+          }
+        }
+      },
+      "exampleResponse": {
+        "type": "object",
+        "properties": {
+          "cases": {
+            "type": "array",
+            "description": "List of cases submitted for assessment",
+            "items": {
+              "$ref": "#/components/schemas/exampleCase"
+            }
+          },
+          "summary": {
+            "$ref": "#/components/schemas/exampleSummary"
+          }
+        }
+      },
+      "exampleSummary": {
+        "type": "object",
+        "properties": {
+          "casesRead": {
+            "type": "number",
+            "description": "The total number of cases submitted in the request payload",
+            "format": "double"
+          },
+          "casesProcessed": {
+            "type": "number",
+            "description": "The number of submitted cases successfully processed",
+            "format": "double"
+          },
+          "casesIgnored": {
+            "type": "number",
+            "description": "The number of submitted cases ignored due to errors",
+            "format": "double"
+          },
+          "processorDurationSec": {
+            "type": "number",
+            "description": "The request processing duration in seconds",
+            "format": "double"
+          },
+          "processorCasesPerSec": {
+            "type": "number",
+            "description": "The average number of cases assessed per second",
+            "format": "double"
+          }
+        }
+      }
+    }
+  }
+}

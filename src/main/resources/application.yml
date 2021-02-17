@@ -1,0 +1,27 @@
+camel:
+    component:
+        servlet:
+            mapping:
+                contextPath: /*
+    springboot:
+        name: OpaPoc
+endpoints:
+    enabled: true
+    health:
+        enabled: true
+logging:
+    config: classpath:logback.xml
+management:
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+runstatus: OPA API POC is running
+server:
+    port: 8080
+opa:
+    baseurl: http://de01c01la04075.tndhs.local:7003/opadev/determinations-server/batch/12.2.7
+    bearerTokenUrl: http://de01c01la04075.tndhs.local:7003/opadev/determinations-server/batch/auth
+spring:
+    application:
+        name: opapoc

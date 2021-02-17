@@ -1,0 +1,189 @@
+openapi: 3.0.3
+info:
+  title: ForgeRock API POC
+  version: '1.0'
+  description: ForgeRock API proof-of-concept
+servers:
+  - url: 'https://localhost:8080'
+paths:
+  /list_policy_models:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyModels'
+          description: List of users
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceError'
+              example:
+                code: '404'
+                message: No user found
+          description: No user found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceError'
+              example:
+                code: '500'
+                message: Service error
+          description: Service error
+      description: List all users
+  /get_policy_model
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetPolicyModelRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyModel'
+          description: Role information
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceError'
+              example:
+                code: '400'
+                message: No query parameter provided
+          description: No query parameter provided
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceError'
+              example:
+                code: '404'
+                message: Role not found
+          description: Role not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceError'
+              example:
+                code: '500'
+                message: Service error
+          description: Service error
+      description: Search for user(s)
+components:
+  schemas:
+    GetPolicyModelRequest:
+      type: object
+      properties:
+        policy-model-name: string
+    ServiceError:
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Error description
+          type: string
+    PolicyModels:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicyModel"
+    PolicyModel:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the policy model
+        data-model:
+          $ref: "#/components/schemas/DataModel"
+        assessor:
+          $ref: "#/components/schemas/Assessor"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+    DataModel:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+    Assessor:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+    Link:
+      type: object
+      properties:
+        rel: string
+        href: string
+    Example:
+      type: object
+      properties:
+        request:
+          $ref: "#/components/schemas/ExampleRequest"
+        response:
+          $ref: "#/components/schemas/ExampleResponse"
+    ExampleCase:
+      type: object
+    ExampleRequest:
+      type: object
+      properties:
+        outcomes:
+          type: array
+          description: List of outcomes to be assessed for each case submitted.
+          items:
+            type: string
+        cases:
+          type: array
+          description: List of cases submitted for assessment
+          items:
+            $ref: "#/components/schemas/ExampleCase"
+    ExampleResponse:
+      type: object
+      properties:
+        cases:
+          type: array
+          description: List of cases submitted for assessment
+          items:
+            $ref: "#/components/schemas/ExampleCase"
+        summary:
+          $ref: "#/components/schemas/ExampleSummary"
+    ExampleSummary:
+      type: object
+      properties:
+        casesRead:
+          type: number
+          description: The total number of cases submitted in the request payload
+          format: double
+        casesProcessed:
+          type: number
+          description: The number of submitted cases successfully processed
+          format: double
+        casesIgnored:
+          type: number
+          description: The number of submitted cases ignored due to errors
+          format: double
+        processorDurationSec:
+          type: number
+          description: The request processing duration in seconds
+          format: double
+        processorCasesPerSec:
+          type: number
+          description: The average number of cases assessed per second
+          format: double
