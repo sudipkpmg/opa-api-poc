@@ -2,7 +2,6 @@ package gov.tn.dhs.opa.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.tn.dhs.opa.config.AppProperties;
 import gov.tn.dhs.opa.model.PolicyModels;
@@ -11,12 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
 
 @Service
 public class ListPolicyModelsService extends BaseService {
@@ -29,14 +23,9 @@ public class ListPolicyModelsService extends BaseService {
 
     public void process(Exchange exchange) {
         String requestUrl = appProperties.getBaseurl() + "/policy-models";
-        String bearer = null;
-        try {
-            bearer = getBearer();
-        } catch (IOException e) {
-            setupError("500", "Authentication error");
-        }
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
+        String bearer = getBearerWithRetry();
         headers.set("Authorization", bearer);
         HttpEntity request = new HttpEntity(headers);
         ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, request, String.class);

@@ -7,6 +7,9 @@ import gov.tn.dhs.opa.exception.ServiceErrorException;
 import gov.tn.dhs.opa.model.ServiceError;
 import gov.tn.dhs.opa.model.SimpleMessage;
 import gov.tn.dhs.opa.util.JsonUtil;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 public abstract class BaseService {
 
@@ -70,7 +74,20 @@ public abstract class BaseService {
         return jsonNode;
     }
 
-    protected String getBearer() throws IOException {
+    protected String getBearerWithRetry() {
+        logger.info("trying to get bearer token");
+        RetryConfig config = RetryConfig.ofDefaults();
+        RetryRegistry registry = RetryRegistry.of(config);
+        Retry retry = registry.retry("GetBearer", config);
+        Supplier<String> bearerSupplier = () -> getBearer();
+        Supplier<String> bearerSearch = Retry.decorateSupplier(retry, bearerSupplier);
+        String bearer = bearerSearch.get();
+        logger.info("bearer = {}", bearer);
+        return bearer;
+    }
+
+    private String getBearer() {
+        String bearer = "";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -81,9 +98,13 @@ public abstract class BaseService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(appProperties.getBearerTokenUrl(), request , String.class);
         String jsonString = response.getBody();
-        JsonNode jsonNode = getJsonFromResponse(jsonString);
-        String accessToken = jsonNode.get("access_token").asText();
-        String bearer = "Bearer " + accessToken;
+        JsonNode jsonNode = null;
+        try {
+            jsonNode = getJsonFromResponse(jsonString);
+            String accessToken = jsonNode.get("access_token").asText();
+            bearer = "Bearer " + accessToken;
+        } catch (IOException e) {
+        }
         return bearer;
     }
 

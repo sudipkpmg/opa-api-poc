@@ -2,7 +2,6 @@ package gov.tn.dhs.opa.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.tn.dhs.opa.config.AppProperties;
 import gov.tn.dhs.opa.model.GetPolicyModelRequest;
@@ -16,11 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
 
 @Service
 public class GetPolicyModelService extends BaseService {
@@ -38,14 +33,9 @@ public class GetPolicyModelService extends BaseService {
             setupError("400", "No query parameter provided");
         }
         String requestUrl = appProperties.getBaseurl() + "/policy-models/" + policyModelName;
-        String bearer = null;
-        try {
-            bearer = getBearer();
-        } catch (IOException e) {
-            setupError("500", "Authentication error");
-        }
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
+        String bearer = getBearerWithRetry();
         headers.set("Authorization", bearer);
         HttpEntity request = new HttpEntity(headers);
         ResponseEntity<String> response = null;
